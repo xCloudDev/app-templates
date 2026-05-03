@@ -1,0 +1,142 @@
+# xCloud OneClick Template Manifest — schema_version: 1
+# yaml-language-server: $schema=https://docs.xcloud.host/schemas/xcloud-template.v1.json
+#
+# Chatwoot — open-source customer engagement platform.
+# Multi-service stack: Rails + Sidekiq + Postgres (pgvector) + Redis.
+# Requires a one-shot `rails db:chatwoot_prepare` after compose-up,
+# wired through the manifest.lifecycle.post_install hook.
+schema_version: 1
+
+slug: chatwoot
+name: Chatwoot
+description: 'Open-source customer engagement platform — chat, email, social inboxes, CRM.'
+version: '1.0.0'
+app_version: 'v3.16.0'
+icon: assets/icon.svg
+
+category: communication
+service_class: web_app
+runtime: docker_compose
+
+tags:
+  - chat
+  - helpdesk
+  - crm
+  - support
+  - omnichannel
+
+files:
+  compose: docker-compose.yml
+  env: .env
+
+requirements:
+  min_ram_mb: 4096
+  min_cpu_cores: 2
+  min_disk_gb: 20
+  stack:
+    - docker_nginx
+
+ports:
+  rails:
+    description: 'Chatwoot HTTP'
+    container_port: 3000
+    proxy: true
+  postgres:
+    description: 'PostgreSQL'
+    container_port: 5432
+    proxy: false
+  redis:
+    description: 'Redis'
+    container_port: 6379
+    proxy: false
+
+fields:
+  -
+    key: admin_email
+    label: 'Administrator email'
+    type: email
+    required: true
+    placeholder: 'admin@example.com'
+    group: admin
+  -
+    key: smtp_host
+    label: 'SMTP host (optional)'
+    type: text
+    required: false
+    placeholder: 'smtp.mailgun.org'
+    group: smtp
+  -
+    key: smtp_port
+    label: 'SMTP port'
+    type: text
+    required: false
+    default: '587'
+    group: smtp
+  -
+    key: smtp_username
+    label: 'SMTP username'
+    type: text
+    required: false
+    group: smtp
+  -
+    key: smtp_password
+    label: 'SMTP password'
+    type: password
+    required: false
+    group: smtp
+  -
+    key: smtp_sender_email
+    label: 'From address'
+    type: email
+    required: false
+    placeholder: 'noreply@example.com'
+    group: smtp
+
+field_groups:
+  -
+    key: admin
+    label: 'Administrator'
+    icon: 'user-circle'
+  -
+    key: smtp
+    label: 'Outbound email (optional)'
+    icon: 'envelope'
+
+generated_values:
+  secret_key_base:
+    type: random
+    length: 64
+  active_record_encryption_primary_key:
+    type: random
+    length: 32
+  active_record_encryption_deterministic_key:
+    type: random
+    length: 32
+  active_record_encryption_key_derivation_salt:
+    type: random
+    length: 32
+  postgres_password:
+    type: random
+    length: 32
+  redis_password:
+    type: random
+    length: 24
+
+volumes:
+  persistent:
+    - storage_data
+    - postgres_data
+    - redis_data
+
+credentials:
+  display:
+    -
+      label: URL
+      value: 'https://${DOMAIN}'
+
+post_install:
+  message: 'Chatwoot is ready at https://${DOMAIN}. The first signup becomes the admin account — set ENABLE_ACCOUNT_SIGNUP=false in /var/www/${SITE_NAME}/.env after onboarding to lock new registrations.'
+
+lifecycle:
+  post_install:
+    fetch: scripts/post-install.sh

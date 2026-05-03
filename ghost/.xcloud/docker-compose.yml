@@ -1,0 +1,49 @@
+services:
+  db:
+    container_name: ghost-db-${SITE_NAME}
+    image: mysql:8.4
+    restart: always
+    env_file:
+      - .env
+    command:
+      - --mysql-native-password=ON
+    volumes:
+      - ghost_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - xcloud-network
+
+  ghost:
+    container_name: ghost-${SITE_NAME}
+    image: ghost:6-alpine
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ghost_content:/var/lib/ghost/content
+    ports:
+      - "127.0.0.1:${PORT_MAIN}:2368"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:2368/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    networks:
+      - xcloud-network
+
+volumes:
+  ghost_content:
+  ghost_db:
+
+networks:
+  xcloud-network:
+    driver: bridge

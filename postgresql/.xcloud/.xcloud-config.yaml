@@ -1,0 +1,88 @@
+# xCloud OneClick Template Manifest — schema_version: 1
+# yaml-language-server: $schema=https://docs.xcloud.host/schemas/xcloud-template.v1.json
+schema_version: 1
+slug: postgresql
+name: PostgreSQL
+description: "Advanced open-source relational database. The world's most advanced open source database."
+version: 1.0.0
+app_version: '17'
+icon: assets/icon.png
+category: database
+service_class: data_service
+runtime: docker_compose
+tags:
+  - database
+  - sql
+  - relational
+  - postgres
+files:
+  compose: docker-compose.yml
+  env: .env
+requirements:
+  min_ram_mb: 512
+  min_cpu_cores: 1
+  min_disk_gb: 2
+  stack:
+    - docker_nginx
+ports:
+  postgres:
+    description: 'PostgreSQL connection'
+    container_port: 5432
+    proxy: false
+fields:
+  -
+    key: admin_user
+    label: 'Superuser Username'
+    type: text
+    required: true
+    default: postgres
+    validation: 'string|max:32|alpha_dash'
+    group: credentials
+  -
+    key: admin_password
+    label: 'Superuser Password'
+    type: password
+    required: true
+    validation: 'string|min:8|max:64'
+    generate: true
+    generate_length: 24
+    group: credentials
+  -
+    key: database_name
+    label: 'Default Database'
+    type: text
+    required: true
+    default: default_db
+    validation: 'string|max:63|alpha_dash'
+    group: credentials
+field_groups:
+  -
+    key: credentials
+    label: 'Connection Credentials'
+    icon: 'xcloud xc-key'
+volumes:
+  persistent:
+    - pgdata
+credentials:
+  display:
+    -
+      label: 'Connection String'
+      value: 'postgresql://${ADMIN_USER}:${ADMIN_PASSWORD}@${SERVER_IP}:${PORT_POSTGRES}/${DATABASE_NAME}'
+    -
+      label: Host
+      value: '${SERVER_IP}'
+    -
+      label: Port
+      value: '${PORT_POSTGRES}'
+    -
+      label: Database
+      value: '${DATABASE_NAME}'
+    -
+      label: Username
+      value: '${ADMIN_USER}'
+    -
+      label: Password
+      value: '${ADMIN_PASSWORD}'
+      secret: true
+post_install:
+  message: 'PostgreSQL is running. Connection details are shown below. By default, it is only accessible from this server.'

@@ -1,0 +1,26 @@
+services:
+  mongodb:
+    container_name: mongodb-${SITE_NAME}
+    image: mongo:8.2
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "0.0.0.0:${PORT_MONGODB}:27017"
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" -u ${MONGO_INITDB_ROOT_USERNAME} -p ${MONGO_INITDB_ROOT_PASSWORD} --authenticationDatabase admin | grep 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 6
+      start_period: 30s
+    networks:
+      - xcloud-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  xcloud-network:
+    driver: bridge

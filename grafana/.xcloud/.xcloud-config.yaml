@@ -1,0 +1,69 @@
+# xCloud OneClick Template Manifest — schema_version: 1
+# yaml-language-server: $schema=https://docs.xcloud.host/schemas/xcloud-template.v1.json
+schema_version: 1
+slug: grafana
+name: Grafana
+description: 'Observability and dashboard platform for metrics, logs, traces, and alerting.'
+version: 1.0.0
+app_version: '12.4'
+icon: assets/icon.png
+category: monitoring
+service_class: web_app
+runtime: docker_compose
+tags:
+  - monitoring
+  - grafana
+  - dashboards
+  - metrics
+  - observability
+files:
+  compose: docker-compose.yml
+  env: .env
+requirements:
+  min_ram_mb: 512
+  min_cpu_cores: 1
+  min_disk_gb: 2
+  stack:
+    - docker_nginx
+ports:
+  main:
+    description: 'Grafana web interface'
+    container_port: 3000
+    proxy: true
+fields:
+  -
+    key: admin_user
+    label: 'Admin Username'
+    type: text
+    required: true
+    default: admin
+    validation: 'string|max:32|alpha_dash'
+    group: credentials
+  -
+    key: admin_password
+    label: 'Admin Password'
+    type: password
+    required: true
+    validation: 'string|min:8|max:64'
+    generate: true
+    generate_length: 24
+    group: credentials
+field_groups:
+  -
+    key: credentials
+    label: 'Admin Credentials'
+    icon: 'xcloud xc-key'
+volumes:
+  persistent:
+    - grafana_data
+credentials:
+  display:
+    -
+      label: Username
+      value: '${ADMIN_USER}'
+    -
+      label: Password
+      value: '${ADMIN_PASSWORD}'
+      secret: true
+post_install:
+  message: 'Grafana is running at https://${DOMAIN}. Sign in with the admin credentials shown below.'

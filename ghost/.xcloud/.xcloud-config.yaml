@@ -1,0 +1,83 @@
+# xCloud OneClick Template Manifest — schema_version: 1
+# yaml-language-server: $schema=https://docs.xcloud.host/schemas/xcloud-template.v1.json
+schema_version: 1
+slug: ghost
+name: Ghost
+description: 'Open-source publishing platform for blogs, memberships, newsletters, and creator websites.'
+version: 1.0.0
+app_version: '6'
+icon: assets/icon.png
+category: cms
+service_class: web_app
+runtime: docker_compose
+tags:
+  - cms
+  - blog
+  - publishing
+  - newsletter
+  - ghost
+files:
+  compose: docker-compose.yml
+  env: .env
+requirements:
+  min_ram_mb: 1024
+  min_cpu_cores: 1
+  min_disk_gb: 4
+  stack:
+    - docker_nginx
+ports:
+  main:
+    description: 'Ghost web interface'
+    container_port: 2368
+    proxy: true
+fields:
+  -
+    key: site_title
+    label: 'Site Title'
+    type: text
+    required: false
+    default: 'My Ghost Site'
+    validation: 'nullable|string|max:120'
+    group: site
+field_groups:
+  -
+    key: site
+    label: 'Site Settings'
+    icon: 'xcloud xc-globe'
+generated_values:
+  db_name:
+    type: database_name
+    prefix: ghost_
+  db_user:
+    type: database_user
+    prefix: ghost_
+  db_password:
+    type: random
+    length: 24
+  db_root_password:
+    type: random
+    length: 24
+volumes:
+  persistent:
+    - ghost_content
+    - ghost_db
+credentials:
+  display:
+    -
+      label: 'Site URL'
+      value: 'https://${DOMAIN}'
+    -
+      label: 'Admin URL'
+      value: 'https://${DOMAIN}/ghost/'
+    -
+      label: 'Database Name'
+      value: '${DB_NAME}'
+    -
+      label: 'Database User'
+      value: '${DB_USER}'
+    -
+      label: 'Database Password'
+      value: '${DB_PASSWORD}'
+      secret: true
+post_install:
+  message: 'Ghost is running at https://${DOMAIN}. Finish setup from the admin panel at /ghost/.'

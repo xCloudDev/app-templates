@@ -1,0 +1,32 @@
+services:
+  redis:
+    container_name: redis-${SITE_NAME}
+    image: redis:8.6-alpine
+    restart: always
+    env_file:
+      - .env
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "0.0.0.0:${PORT_REDIS}:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"${REDIS_PASSWORD}\" ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    networks:
+      - xcloud-network
+
+volumes:
+  redis_data:
+
+networks:
+  xcloud-network:
+    external: true
