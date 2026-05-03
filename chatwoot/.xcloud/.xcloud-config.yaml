@@ -12,7 +12,7 @@ name: Chatwoot
 description: 'Open-source customer engagement platform — chat, email, social inboxes, CRM.'
 version: '1.0.0'
 app_version: 'v3.16.0'
-icon: assets/icon.svg
+icon: assets/icon.png
 
 category: communication
 service_class: web_app
