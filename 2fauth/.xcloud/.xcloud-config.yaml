@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=https://docs.xcloud.host/schemas/xcloud-template.v1.json
+schema_version: 1
+
+slug: 2fauth
+name: 2FAuth
+description: 'Self-hosted single-user 2FA / TOTP code manager. Stores your authenticator secrets so you can generate codes from a browser instead of an app.'
+version: '1.0.0'
+app_version: '6.1.3'
+icon: assets/icon.png
+
+category: security
+service_class: web_app
+runtime: docker_compose
+
+tags:
+  - 2fa
+  - totp
+  - security
+  - authenticator
+  - self-hosted
+
+files:
+  compose: docker-compose.yml
+  env: .env
+
+requirements:
+  min_ram_mb: 256
+  min_cpu_cores: 1
+  min_disk_gb: 1
+  stack:
+    - docker_nginx
+
+ports:
+  main:
+    description: '2FAuth web interface'
+    container_port: 8000
+    proxy: true
+
+fields:
+  - key: site_owner
+    label: 'Owner email'
+    type: email
+    required: true
+    placeholder: 'you@example.com'
+    help_text: 'Used to surface the site owner in app metadata. The first user who registers becomes the (only) admin.'
+    group: owner
+
+field_groups:
+  - key: owner
+    label: 'Owner'
+    icon: 'xcloud xc-user'
+
+generated_values:
+  app_key:
+    type: random
+    length: 32
+
+volumes:
+  persistent:
+    - twofauth_data
+
+credentials:
+  display:
+    - { label: 'URL', value: 'https://${DOMAIN}' }
+    - { label: 'Owner email', value: '${SITE_OWNER}' }
+
+post_install:
+  message: '2FAuth is ready at https://${DOMAIN}. Open the URL and click Register — the first account becomes the only user. IMPORTANT: back up the APP_KEY value in /var/www/${SITE_NAME}/.env. If you enable per-account secret encryption later, losing APP_KEY makes all stored TOTP secrets unrecoverable.'
