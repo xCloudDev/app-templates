@@ -51,7 +51,7 @@ services:
       - xcloud-network
 
   redis:
-    image: redis:alpine
+    image: redis:7-alpine
     container_name: chatwoot-redis-${SITE_NAME}
     restart: always
     command: 'redis-server --requirepass ${REDIS_PASSWORD}'
@@ -67,4 +67,4 @@ volumes:
 
 networks:
   xcloud-network:
-    external: true
+    driver: bridge

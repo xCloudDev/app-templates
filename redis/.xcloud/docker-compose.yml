@@ -29,4 +29,4 @@ volumes:
 
 networks:
   xcloud-network:
-    external: true
+    driver: bridge
