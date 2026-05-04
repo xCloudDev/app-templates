@@ -50,57 +50,7 @@ ports:
     container_port: 6379
     proxy: false
 
-fields:
-  -
-    key: admin_email
-    label: 'Administrator email'
-    type: email
-    required: true
-    placeholder: 'admin@example.com'
-    group: admin
-  -
-    key: smtp_host
-    label: 'SMTP host (optional)'
-    type: text
-    required: false
-    placeholder: 'smtp.mailgun.org'
-    group: smtp
-  -
-    key: smtp_port
-    label: 'SMTP port'
-    type: text
-    required: false
-    default: '587'
-    group: smtp
-  -
-    key: smtp_username
-    label: 'SMTP username'
-    type: text
-    required: false
-    group: smtp
-  -
-    key: smtp_password
-    label: 'SMTP password'
-    type: password
-    required: false
-    group: smtp
-  -
-    key: smtp_sender_email
-    label: 'From address'
-    type: email
-    required: false
-    placeholder: 'noreply@example.com'
-    group: smtp
-
-field_groups:
-  -
-    key: admin
-    label: 'Administrator'
-    icon: 'user-circle'
-  -
-    key: smtp
-    label: 'Outbound email (optional)'
-    icon: 'envelope'
+fields: []
 
 generated_values:
   secret_key_base:
@@ -135,7 +85,7 @@ credentials:
       value: 'https://${DOMAIN}'
 
 post_install:
-  message: 'Chatwoot is ready at https://${DOMAIN}. The first signup becomes the admin account — set ENABLE_ACCOUNT_SIGNUP=false in /var/www/${SITE_NAME}/.env after onboarding to lock new registrations.'
+  message: 'Chatwoot is ready at https://${DOMAIN}. The first signup becomes the admin account. After onboarding, set ENABLE_ACCOUNT_SIGNUP=false in /var/www/${SITE_NAME}/.env to lock new registrations. Configure outbound email from Chatwoot''s in-app settings or by editing the SMTP_* / MAILER_SENDER_EMAIL keys in the same .env.'
 
 lifecycle:
   post_install:
