@@ -39,13 +39,19 @@ None. The user picks a domain; everything else is auto-generated.
 
 ## SMTP (optional)
 
-The shipped `.env` has empty `SMTP_*` placeholders. SMTP is needed for:
-- Password reset emails
-- Invitations
-- Email-based 2FA
-- New-device notifications
+The shipped `.env` does **not** include SMTP keys — Vaultwarden validates partial SMTP config and refuses to boot if any SMTP_* var is set without `SMTP_HOST` + `SMTP_FROM`. To enable email (password reset, invitations, email-based 2FA, new-device notifications), add a complete block to `/var/www/${SITE_NAME}/.env`:
 
-Edit the rendered `.env` post-install and `docker compose up -d` to apply.
+```
+SMTP_HOST=smtp.example.com
+SMTP_FROM=noreply@example.com
+SMTP_FROM_NAME=Vaultwarden
+SMTP_PORT=587
+SMTP_SECURITY=starttls
+SMTP_USERNAME=...
+SMTP_PASSWORD=...
+```
+
+Then `docker compose up -d` to apply.
 
 ## Hardening recommendations
 
