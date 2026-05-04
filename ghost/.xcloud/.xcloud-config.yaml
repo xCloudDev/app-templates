@@ -30,20 +30,7 @@ ports:
     description: 'Ghost web interface'
     container_port: 2368
     proxy: true
-fields:
-  -
-    key: site_title
-    label: 'Site Title'
-    type: text
-    required: false
-    default: 'My Ghost Site'
-    validation: 'nullable|string|max:120'
-    group: site
-field_groups:
-  -
-    key: site
-    label: 'Site Settings'
-    icon: 'xcloud xc-globe'
+fields: []
 generated_values:
   db_name:
     type: database_name
