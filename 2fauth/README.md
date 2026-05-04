@@ -12,9 +12,7 @@ Self-hosted, single-user 2FA / TOTP code manager. Stores authenticator secrets s
 
 ## Fields the install form asks for
 
-| Key | Label | Notes |
-|---|---|---|
-| `site_owner` | Owner email | Surfaced as `SITE_OWNER` in `.env`; the first user who registers becomes the only admin. |
+None — the user picks a domain; the first person to visit it and register becomes the only admin.
 
 ## Auto-generated values
 
@@ -25,7 +23,6 @@ Self-hosted, single-user 2FA / TOTP code manager. Stores authenticator secrets s
 ## What the user gets in the credentials panel
 
 - **URL** — `https://${DOMAIN}`
-- **Owner email** — the address from the install form
 
 ## First-run
 

@@ -36,19 +36,7 @@ ports:
     container_port: 8000
     proxy: true
 
-fields:
-  - key: site_owner
-    label: 'Owner email'
-    type: email
-    required: true
-    placeholder: 'you@example.com'
-    help_text: 'Used to surface the site owner in app metadata. The first user who registers becomes the (only) admin.'
-    group: owner
-
-field_groups:
-  - key: owner
-    label: 'Owner'
-    icon: 'xcloud xc-user'
+fields: []
 
 generated_values:
   app_key:
@@ -62,7 +50,6 @@ volumes:
 credentials:
   display:
     - { label: 'URL', value: 'https://${DOMAIN}' }
-    - { label: 'Owner email', value: '${SITE_OWNER}' }
 
 post_install:
   message: '2FAuth is ready at https://${DOMAIN}. Open the URL and click Register — the first account becomes the only user. IMPORTANT: back up the APP_KEY value in /var/www/${SITE_NAME}/.env. If you enable per-account secret encryption later, losing APP_KEY makes all stored TOTP secrets unrecoverable.'
