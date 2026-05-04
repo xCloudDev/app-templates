@@ -1,0 +1,47 @@
+services:
+  bookstack:
+    container_name: bookstack-${SITE_NAME}
+    image: lscr.io/linuxserver/bookstack:25.05
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - bookstack_config:/config
+    ports:
+      - "127.0.0.1:${PORT_MAIN}:80"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:80/login || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 60s
+    networks:
+      - xcloud-network
+
+  db:
+    container_name: bookstack-db-${SITE_NAME}
+    image: lscr.io/linuxserver/mariadb:11.4.5
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - bookstack_db:/config
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/bin/healthcheck.sh --connect --innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - xcloud-network
+
+volumes:
+  bookstack_config:
+  bookstack_db:
+
+networks:
+  xcloud-network:
+    driver: bridge

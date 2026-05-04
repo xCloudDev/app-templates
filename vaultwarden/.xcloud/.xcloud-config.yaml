@@ -1,0 +1,50 @@
+# xCloud OneClick Template Manifest — schema_version: 1
+# yaml-language-server: $schema=https://docs.xcloud.host/schemas/xcloud-template.v1.json
+schema_version: 1
+slug: vaultwarden
+name: Vaultwarden
+description: 'Self-hosted Bitwarden-compatible password manager. Single binary, SQLite-backed, runs in ~50MB RAM.'
+version: 1.0.0
+app_version: '1.32.7-alpine'
+icon: assets/icon.png
+category: security
+service_class: web_app
+runtime: docker_compose
+tags:
+  - password-manager
+  - bitwarden
+  - security
+  - secrets
+files:
+  compose: docker-compose.yml
+  env: .env
+requirements:
+  min_ram_mb: 512
+  min_cpu_cores: 1
+  min_disk_gb: 4
+  stack:
+    - docker_nginx
+ports:
+  main:
+    description: 'Vaultwarden HTTP'
+    container_port: 80
+    proxy: true
+fields: []
+generated_values:
+  admin_token:
+    type: random
+    length: 48
+volumes:
+  persistent:
+    - vaultwarden_data
+credentials:
+  display:
+    - label: 'Vault URL'
+      value: 'https://${DOMAIN}'
+    - label: 'Admin panel URL'
+      value: 'https://${DOMAIN}/admin'
+    - label: 'Admin token (for /admin)'
+      value: '${ADMIN_TOKEN}'
+      secret: true
+post_install:
+  message: 'Vaultwarden is ready at https://${DOMAIN}. Sign up to create your account — the first signup is just a regular user (admin is separate, gated by the admin token above). After your account is created, set SIGNUPS_ALLOWED=false in /var/www/${SITE_NAME}/.env and run "docker compose up -d" to lock new registrations.'
