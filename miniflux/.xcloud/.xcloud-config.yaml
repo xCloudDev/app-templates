@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://docs.xcloud.host/schemas/xcloud-template.v1.json
+schema_version: 1
+
+slug: miniflux
+name: Miniflux
+description: 'Minimalist self-hosted RSS reader. Single Go binary + Postgres backend. Stateless app container, ~80 MB RAM. Mark-as-read keyboard shortcuts, full-text search, mobile-first reading.'
+version: '1.0.0'
+app_version: '2.2.19'
+icon: assets/icon.png
+
+category: productivity
+service_class: web_app
+runtime: docker_compose
+
+tags:
+  - rss
+  - reader
+  - news
+  - aggregator
+  - self-hosted
+
+files:
+  compose: docker-compose.yml
+  env: .env
+
+requirements:
+  min_ram_mb: 512
+  min_cpu_cores: 1
+  min_disk_gb: 2
+  stack:
+    - docker_nginx
+
+ports:
+  main:
+    description: 'Miniflux web interface'
+    container_port: 8080
+    proxy: true
+
+fields:
+  - key: admin_user
+    label: 'Admin Username'
+    type: text
+    required: true
+    default: admin
+    validation: 'string|max:32|alpha_dash'
+    group: credentials
+  - key: admin_password
+    label: 'Admin Password'
+    type: password
+    required: true
+    validation: 'string|min:8|max:64'
+    generate: true
+    generate_length: 24
+    group: credentials
+
+field_groups:
+  - key: credentials
+    label: 'Admin Credentials'
+    icon: 'xcloud xc-key'
+
+generated_values:
+  db_password:
+    type: random
+    length: 24
+
+volumes:
+  persistent:
+    - miniflux_db_data
+
+credentials:
+  display:
+    - { label: 'URL', value: 'https://${DOMAIN}' }
+    - { label: 'Username', value: '${ADMIN_USER}' }
+    - { label: 'Password', value: '${ADMIN_PASSWORD}', secret: true }
+
+post_install:
+  message: 'Miniflux is ready at https://${DOMAIN}. Sign in with the admin credentials shown below. Add feeds from + → Add subscription, organize with categories, and review keyboard shortcuts at Settings → Keyboard shortcuts. The mobile-first UI works as a PWA — install it from your phone browser for offline reading.'
