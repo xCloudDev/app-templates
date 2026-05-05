@@ -6,7 +6,7 @@ name: Gotify
 description: 'Self-hosted push-notification server with a REST API. Send messages from scripts/apps and receive them on the web UI, Android, or any client. Single Go binary, SQLite, ~30 MB RAM idle.'
 version: '1.0.0'
 app_version: '2.9.1'
-icon: assets/gotify.png
+icon: assets/icon.png
 
 category: communication
 service_class: web_app
