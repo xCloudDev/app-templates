@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://docs.xcloud.host/schemas/xcloud-template.v1.json
+schema_version: 1
+
+slug: memos
+name: Memos
+description: 'Lightweight self-hosted note-taking and knowledge-base app. Markdown-first, public/private posts, tags, daily-review style. Single binary, SQLite, ~50 MB RAM idle.'
+version: '1.0.0'
+app_version: '0.28.0'
+icon: assets/icon.png
+
+category: productivity
+service_class: web_app
+runtime: docker_compose
+
+tags:
+  - notes
+  - knowledge
+  - markdown
+  - microblog
+  - self-hosted
+
+files:
+  compose: docker-compose.yml
+  env: .env
+
+requirements:
+  min_ram_mb: 256
+  min_cpu_cores: 1
+  min_disk_gb: 1
+  stack:
+    - docker_nginx
+
+ports:
+  main:
+    description: 'Memos web interface'
+    container_port: 5230
+    proxy: true
+
+fields: []
+
+volumes:
+  persistent:
+    - memos_data
+
+credentials:
+  display:
+    - { label: 'URL', value: 'https://${DOMAIN}' }
+
+post_install:
+  message: 'Memos is ready at https://${DOMAIN}/auth — register the first account and it automatically becomes the workspace Host (admin). After signing in, go to Settings → Workspace and toggle "Disable user signup" to prevent unauthorized registrations. Configure SMTP, storage backends, and SSO from Settings → Workspace.'
