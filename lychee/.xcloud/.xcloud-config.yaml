@@ -58,6 +58,10 @@ field_groups:
     label: 'Admin Credentials'
     icon: 'xcloud xc-key'
 
+generated_values:
+  app_key:
+    type: app_key
+
 volumes:
   persistent:
     - lychee_conf
