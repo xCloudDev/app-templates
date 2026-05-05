@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://docs.xcloud.host/schemas/xcloud-template.v1.json
+schema_version: 1
+
+slug: gotify
+name: Gotify
+description: 'Self-hosted push-notification server with a REST API. Send messages from scripts/apps and receive them on the web UI, Android, or any client. Single Go binary, SQLite, ~30 MB RAM idle.'
+version: '1.0.0'
+app_version: '2.9.1'
+icon: assets/icon.png
+
+category: communication
+service_class: web_app
+runtime: docker_compose
+
+tags:
+  - notifications
+  - push
+  - alerts
+  - self-hosted
+  - api
+
+files:
+  compose: docker-compose.yml
+  env: .env
+
+requirements:
+  min_ram_mb: 128
+  min_cpu_cores: 1
+  min_disk_gb: 1
+  stack:
+    - docker_nginx
+
+ports:
+  main:
+    description: 'Gotify web interface + API'
+    container_port: 80
+    proxy: true
+
+fields:
+  - key: admin_user
+    label: 'Admin Username'
+    type: text
+    required: true
+    default: admin
+    validation: 'string|max:32|alpha_dash'
+    group: credentials
+  - key: admin_password
+    label: 'Admin Password'
+    type: password
+    required: true
+    validation: 'string|min:8|max:64'
+    generate: true
+    generate_length: 24
+    group: credentials
+
+field_groups:
+  - key: credentials
+    label: 'Admin Credentials'
+    icon: 'xcloud xc-key'
+
+volumes:
+  persistent:
+    - gotify_data
+
+credentials:
+  display:
+    - { label: 'URL', value: 'https://${DOMAIN}' }
+    - { label: 'Username', value: '${ADMIN_USER}' }
+    - { label: 'Password', value: '${ADMIN_PASSWORD}', secret: true }
+
+post_install:
+  message: 'Gotify is ready at https://${DOMAIN}. Sign in with the admin credentials shown below. Create application tokens from Apps → Create Application to get a token; clients POST messages to https://${DOMAIN}/message?token=<APP_TOKEN>. The Android app at https://gotify.net/clients pushes notifications to your phone.'
