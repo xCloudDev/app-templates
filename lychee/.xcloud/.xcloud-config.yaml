@@ -1,0 +1,76 @@
+# yaml-language-server: $schema=https://docs.xcloud.host/schemas/xcloud-template.v1.json
+schema_version: 1
+
+slug: lychee
+name: Lychee
+description: 'Self-hosted photo gallery — upload, organize, and share your photos with album-level privacy controls. ImageMagick-powered thumbnails and video transcoding included.'
+version: '1.0.0'
+app_version: 'v7.5.4'
+icon: assets/icon.png
+
+category: media
+service_class: web_app
+runtime: docker_compose
+
+tags:
+  - photos
+  - gallery
+  - self-hosted
+  - media
+  - lychee
+
+files:
+  compose: docker-compose.yml
+  env: .env
+
+requirements:
+  min_ram_mb: 2048
+  min_cpu_cores: 1
+  min_disk_gb: 10
+  stack:
+    - docker_nginx
+
+ports:
+  main:
+    description: 'Lychee web interface'
+    container_port: 80
+    proxy: true
+
+fields:
+  - key: admin_user
+    label: 'Admin Username'
+    type: text
+    required: true
+    default: admin
+    validation: 'string|max:32|alpha_dash'
+    group: credentials
+  - key: admin_password
+    label: 'Admin Password'
+    type: password
+    required: true
+    validation: 'string|min:8|max:64'
+    generate: true
+    generate_length: 24
+    group: credentials
+
+field_groups:
+  - key: credentials
+    label: 'Admin Credentials'
+    icon: 'xcloud xc-key'
+
+volumes:
+  persistent:
+    - lychee_conf
+    - lychee_uploads
+    - lychee_sym
+    - lychee_logs
+    - lychee_tmp
+
+credentials:
+  display:
+    - { label: 'URL', value: 'https://${DOMAIN}' }
+    - { label: 'Username', value: '${ADMIN_USER}' }
+    - { label: 'Password', value: '${ADMIN_PASSWORD}', secret: true }
+
+post_install:
+  message: 'Lychee is ready at https://${DOMAIN}. Sign in with the admin credentials shown below. NOTE: large photo uploads (RAW, high-res) may exceed the default nginx body-size limit. If you see HTTP 413 on upload, raise client_max_body_size from the Nginx Customization page on this site.'
